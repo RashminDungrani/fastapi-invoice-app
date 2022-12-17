@@ -4,14 +4,15 @@ TODO: Write about this model
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
+
+from app.db.base import SQLModel
 
 if TYPE_CHECKING:
     from app.models.invoice_model import Invoice
 
 
 class ClientContact(SQLModel, table=True):
-    __tablename__: str = "client_contact"
 
     id: Optional[int] = Field(primary_key=True, default=None, nullable=False)
     client_name: str = Field(index=True, min_length=2)

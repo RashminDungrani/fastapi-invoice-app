@@ -1,6 +1,7 @@
 import uvicorn
 
 from app.core.settings import settings
+from app.models import load_all_models
 
 
 def main() -> None:
@@ -30,5 +31,7 @@ if __name__ == "__main__":
 
     # * Insert intial data to tables if not exist
     # init_db()
+
+    load_all_models()
 
     main()

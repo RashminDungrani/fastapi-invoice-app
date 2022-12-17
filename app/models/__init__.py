@@ -22,4 +22,5 @@ def load_all_models() -> None:
         prefix="app.models.",
     )
     for module in modules:
+        print(module.name)
         __import__(module.name)  # noqa: WPS421

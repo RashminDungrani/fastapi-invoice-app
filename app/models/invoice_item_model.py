@@ -2,7 +2,9 @@ import enum
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlmodel import Column, Enum, Field, Relationship, SQLModel
+from sqlmodel import Column, Enum, Field, Relationship
+
+from app.db.base import SQLModel
 
 if TYPE_CHECKING:
     from app.models.invoice_model import Invoice
@@ -10,7 +12,7 @@ if TYPE_CHECKING:
 
 class InvoiceItem(SQLModel, table=True):
     id: Optional[int] = Field(primary_key=True, default=None, nullable=False)
-    invoice_id: int = Field(foreign_key="invoice.id")
+    invoice_id: int = Field(foreign_key="Invoice.id")
     name: str = Field(index=True, min_length=2, max_length=40)
     price: float = Field(nullable=False)
     quantity: Optional[int] = Field(default=1, nullable=False)

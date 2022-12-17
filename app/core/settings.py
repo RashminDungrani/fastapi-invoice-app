@@ -58,9 +58,7 @@ class Settings(BaseSettings):
         :return: database URL.
         """
         generated_url = URL.build(
-            scheme="postgresql+asyncpg"
-            if self.db_type == "postgres"
-            else "mysql+aiomysql",
+            scheme="postgresql+asyncpg" if self.db_type == "postgres" else "mysql+aiomysql",
             host=self.db_host,
             port=self.db_port,
             user=self.db_user,
