@@ -15,9 +15,7 @@ async def create_database(drop_db_if_exist: bool = False) -> None:
     is_postgres_db: bool = settings.db_type == "postgres"
 
     db_url = (
-        make_url(str(settings.db_url.with_path("/postgres")))
-        if is_postgres_db
-        else make_url(str(settings.db_url))
+        make_url(str(settings.db_url.with_path("/postgres"))) if is_postgres_db else make_url(str(settings.db_url))
     )
 
     engine = create_async_engine(db_url, isolation_level="AUTOCOMMIT")
@@ -32,9 +30,7 @@ async def create_database(drop_db_if_exist: bool = False) -> None:
         )
 
         is_database_exists = (
-            database_existance.scalar() == 1
-            if is_postgres_db
-            else database_existance.scalar() == settings.db_base
+            database_existance.scalar() == 1 if is_postgres_db else database_existance.scalar() == settings.db_base
         )
         if is_database_exists:
             print("-- database already exist")
@@ -44,9 +40,7 @@ async def create_database(drop_db_if_exist: bool = False) -> None:
         print("-- drop database")
 
     if is_database_exists and not drop_db_if_exist:
-        print(
-            "-- not creating db because db already exist and drop_db_if_exist value is False"
-        )
+        print("-- not creating db because db already exist and drop_db_if_exist value is False")
     else:
         async with engine.connect() as conn:  # noqa: WPS440
             await conn.execute(
@@ -83,11 +77,7 @@ async def drop_database() -> None:
             )
             await conn.execute(text(disc_users))
         await conn.execute(
-            text(
-                f'DROP DATABASE "{settings.db_base}"'
-                if is_postgres_db
-                else f"DROP DATABASE {settings.db_base}"
-            )
+            text(f'DROP DATABASE "{settings.db_base}"' if is_postgres_db else f"DROP DATABASE {settings.db_base}")
         )
 
     await engine.dispose()

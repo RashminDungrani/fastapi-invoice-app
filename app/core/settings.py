@@ -65,7 +65,8 @@ class Settings(BaseSettings):
             port=self.db_port,
             user=self.db_user,
             password=self.db_pass,
-            path=f"/{self.db_base}",  # path should be commented only while creating db from main file
+            # path should be commented only while creating db from main file
+            path=f"/{self.db_base}",
         )
 
         print("Generated DB URL ::", generated_url)
