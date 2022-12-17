@@ -1,6 +1,8 @@
 """
-TODO: Write about this model
+Client contact for invoice
+One client contact can have multiple invoices
 """
+
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 

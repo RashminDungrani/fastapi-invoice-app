@@ -1,3 +1,8 @@
+"""
+Invoice contact for invoice
+One invoice contact can have multiple invoices
+"""
+
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 

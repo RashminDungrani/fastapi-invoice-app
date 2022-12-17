@@ -1,10 +1,15 @@
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.orm import noload, selectinload
+from sqlmodel import select
 
 from app.core.auth import AuthHandler
-from app.models.invoice_model import Invoice, InvoiceInput
+from app.models.client_contact_model import ClientContact
+from app.models.invoice_contact_model import InvoiceContact
+from app.models.invoice_model import Invoice, InvoiceFull, InvoiceInput
+from app.models.note_model import Note
 from app.routes.invoice.invoice_dao import InvoiceDAO
 
 auth_handler = AuthHandler()
@@ -25,11 +30,36 @@ async def create_invoice(
 # * GET
 @router.get("/all", response_model=list[Invoice])
 async def get_all_invoices(
-    limit: Optional[int] = Query(default=100, ge=0),
+    limit: Optional[int] = Query(default=None, ge=0),
     invoice_dao: InvoiceDAO = Depends(),
 ):
     invoices = await invoice_dao.select_all(limit=limit)
     return invoices
+
+
+@router.get("/full", response_model=InvoiceFull)
+async def get_full_invoice(
+    invoice_id: int,
+    invoice_dao: InvoiceDAO = Depends(),
+):
+    statement = (
+        select(Invoice)
+        .where(Invoice.id == invoice_id)
+        .limit(1)
+        .options(
+            selectinload(Invoice.client_contact),
+            selectinload(Invoice.invoice_contact),
+            selectinload(Invoice.items),
+            selectinload(Invoice.notes),
+        )
+    )
+
+    result = await invoice_dao.select_custom(statement)
+    result = result.scalar_one_or_none()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invoice id not exist")
+
+    return InvoiceFull(**dict(result))
 
 
 # * PUT

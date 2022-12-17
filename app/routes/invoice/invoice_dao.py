@@ -1,13 +1,17 @@
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import exc
 from sqlalchemy.orm import noload, selectinload
+from sqlalchemy.sql import Executable
 from sqlmodel import delete, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.db.dependencies import get_db_session
-from app.models.invoice_model import Invoice, InvoiceInput
+from app.models.client_contact_model import ClientContact
+from app.models.invoice_contact_model import InvoiceContact
+from app.models.invoice_model import Invoice, InvoiceFull, InvoiceInput
+from app.models.note_model import Note
 
 
 class InvoiceDAO:
@@ -22,6 +26,9 @@ class InvoiceDAO:
             raise HTTPException(status_code=404, detail="invoice id not found")
 
         return invoice
+
+    async def select_custom(self, statement: Executable) -> Any:
+        return await self.session.execute(statement)
 
     async def select_all(self, offset: Optional[int] = None, limit: Optional[int] = None) -> list[Invoice]:
         query = select(Invoice).offset(offset).limit(limit)
@@ -54,7 +61,5 @@ class InvoiceDAO:
         return db_invoice
 
     async def delete(self, invoice_item: Invoice) -> None:
-        # TODO: use this if this works
-        # delete(invoice_item)
         await self.session.delete(invoice_item)
         await self.session.commit()

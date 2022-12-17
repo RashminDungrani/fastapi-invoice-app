@@ -1,6 +1,7 @@
 """
 Invoice Table for storing invoice price, client contact, invoice contact etc
 """
+
 from datetime import datetime
 from typing import Optional
 
@@ -43,8 +44,16 @@ class Invoice(InvoiceBase, table=True):
         back_populates="invoice",
         sa_relationship_kwargs=dict(
             primaryjoin="Invoice.id==InvoiceItem.invoice_id",
-            # lazy="noload",
-            #     viewonly=True,
         ),
     )  # parent
-    notes: list["Note"] = Relationship(back_populates="invoice")  # parent
+    notes: list[Note] = Relationship(
+        back_populates="invoice", sa_relationship_kwargs=dict(primaryjoin="Invoice.id==Note.invoice_id")
+    )  # parent
+
+
+class InvoiceFull(InvoiceBase):
+    id: int
+    client_contact: Optional[ClientContact]
+    invoice_contact: Optional[InvoiceContact]
+    items: list[InvoiceItem]
+    notes: list[Note]

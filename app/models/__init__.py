@@ -16,6 +16,16 @@ Import the various model modules in one place and resolve forward refs.
 import pkgutil
 from pathlib import Path
 
+from app.models.client_contact_model import ClientContact
+from app.models.invoice_contact_model import InvoiceContact
+from app.models.invoice_item_model import InvoiceItem
+from app.models.invoice_model import InvoiceFull
+from app.models.note_model import Note
+
+InvoiceFull.update_forward_refs(
+    ClientContact=ClientContact, InvoiceContact=InvoiceContact, InvoiceItem=InvoiceItem, Note=Note
+)
+
 
 def load_all_models() -> None:
     """Load all models from this folder."""
