@@ -2,15 +2,14 @@ import enum
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlmodel import Column, Enum, Field, Relationship
-
-from app.db.base import SQLModel
+from sqlmodel import Column, Enum, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from app.models.invoice_model import Invoice
 
 
 class InvoiceItem(SQLModel, table=True):
+    __tablename__: str = "InvoiceItem"
     id: Optional[int] = Field(primary_key=True, default=None, nullable=False)
     invoice_id: int = Field(foreign_key="Invoice.id")
     name: str = Field(index=True, min_length=2, max_length=40)

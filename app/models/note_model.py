@@ -5,9 +5,7 @@ import enum
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlmodel import Column, Enum, Field, Relationship
-
-from app.db.base import SQLModel
+from sqlmodel import Column, Enum, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from app.models.invoice_model import Invoice
@@ -17,6 +15,7 @@ if TYPE_CHECKING:
 
 
 class Note(SQLModel, table=True):
+    __tablename__: str = "Note"
     id: Optional[int] = Field(primary_key=True, default=None, nullable=False)
     note: str = Field(index=True, min_length=1)
     invoice_id: int = Field(foreign_key="Invoice.id")

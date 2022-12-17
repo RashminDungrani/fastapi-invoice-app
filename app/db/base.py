@@ -2,15 +2,16 @@ from typing import Any, Tuple
 
 from sqlalchemy import Table
 from sqlalchemy.orm import as_declarative, declared_attr
-from sqlmodel import SQLModel as _SQLModel
 
 from app.db.meta import meta
 
+# from sqlmodel import SQLModel as _SQLModel
 
-class SQLModel(_SQLModel):
-    @declared_attr  # type: ignore
-    def __tablename__(cls) -> str:
-        return cls.__name__  # type: ignore
+
+# class SQLModel(_SQLModel):
+#     @declared_attr  # type: ignore
+#     def __tablename__(cls) -> str:
+#         return cls.__name__  # type: ignore
 
 
 @as_declarative(metadata=meta)

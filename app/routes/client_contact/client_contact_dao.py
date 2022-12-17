@@ -30,8 +30,9 @@ class ClientContactDAO:
         await self.session.commit()
         return client_contact
 
-    async def update(self, db_client_contact: ClientContact, updated_client_contact: ClientContact) -> ClientContact:
-
+    async def update(
+        self, db_client_contact: ClientContact, updated_client_contact: ClientContactInput
+    ) -> ClientContact:
         for key, value in (updated_client_contact.dict(exclude_unset=True)).items():
             setattr(db_client_contact, key, value)
         self.session.add(db_client_contact)

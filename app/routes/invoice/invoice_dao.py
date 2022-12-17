@@ -1,6 +1,7 @@
 from typing import Optional
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, status
+from sqlalchemy import exc
 from sqlalchemy.orm import noload, selectinload
 from sqlmodel import delete, select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -25,14 +26,23 @@ class InvoiceDAO:
     async def select_all(self, offset: Optional[int] = None, limit: Optional[int] = None) -> list[Invoice]:
         query = select(Invoice).offset(offset).limit(limit)
 
-        invoices = (await self.session.execute(query)).scalars().fetchall()
+        invoices = (await self.session.execute(query)).scalars().all()
         return invoices
 
     async def insert(self, inserted_invoice: InvoiceInput) -> Invoice:
-        invoice: Invoice = Invoice.from_orm(inserted_invoice)
-        self.session.add(invoice)
-        await self.session.commit()
-        return invoice
+        try:
+            invoice: Invoice = Invoice.from_orm(inserted_invoice)
+            self.session.add(invoice)
+            await self.session.commit()
+            print("after commit")
+            return invoice
+        except exc.IntegrityError as error:
+            print(error.code, error.params)
+            await self.session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Client contact id {inserted_invoice.client_contact_id} or/and Invoice contact id {inserted_invoice.invoice_contact_id} not exist",
+            )
 
     async def update(self, db_invoice: Invoice, updated_invoice: InvoiceInput) -> Invoice:
         for key, value in (updated_invoice.dict(exclude_unset=True)).items():

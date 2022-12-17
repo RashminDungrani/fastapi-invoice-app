@@ -9,6 +9,9 @@ Import the various model modules in one place and resolve forward refs.
 # AccountOutputWithCustomer.update_forward_refs(CustomerOutput=CustomerOutput)
 # CustomerOutputWithAccounts.update_forward_refs(AccountOutput=AccountOutput)
 
+# from app.models.invoice_model import Invoice
+
+# Invoice.update_forward_refs()
 
 import pkgutil
 from pathlib import Path

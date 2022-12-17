@@ -4,9 +4,7 @@ TODO: Write about this model
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlmodel import Field, Relationship
-
-from app.db.base import SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from app.models.invoice_model import Invoice
@@ -24,6 +22,7 @@ class ClientContactBase(ClientContactInput):
 
 
 class ClientContact(ClientContactBase, table=True):
+    __tablename__: str = "ClientContact"
     id: Optional[int] = Field(primary_key=True, default=None, nullable=False)
 
     invoices: list["Invoice"] = Relationship(back_populates="client_contact")  # parent

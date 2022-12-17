@@ -1,3 +1,3 @@
-# from app.routes.invoice_contact import router
+from app.routes.invoice_contact.invoice_contact_view import router
 
-# __all__ = ["router"]
+__all__ = ["router"]

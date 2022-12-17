@@ -1,18 +1,15 @@
 """
-TODO: Write about this model
+Invoice Table for storing invoice price, client contact, invoice contact etc
 """
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
-from sqlmodel import Field, Relationship
+from sqlmodel import Field, Relationship, SQLModel
 
-from app.db.base import SQLModel
-
-if TYPE_CHECKING:
-    from app.models.client_contact_model import ClientContact
-    from app.models.invoice_contact_model import InvoiceContact
-    from app.models.invoice_item_model import InvoiceItem
-    from app.models.note_model import Note
+from app.models.client_contact_model import ClientContact
+from app.models.invoice_contact_model import InvoiceContact
+from app.models.invoice_item_model import InvoiceItem
+from app.models.note_model import Note
 
 
 class InvoiceInput(SQLModel):
@@ -21,29 +18,33 @@ class InvoiceInput(SQLModel):
     invoice_contact_id: int = Field(foreign_key="InvoiceContact.id")  # fk
 
 
-class InvoiceBase(SQLModel):
+class InvoiceBase(InvoiceInput):
     created_at: Optional[datetime] = Field(default=datetime.now(), nullable=False)
     modified_at: Optional[datetime] = Field(default=datetime.now(), nullable=False)
     deleted_at: Optional[datetime] = Field(nullable=True)
 
 
 class Invoice(InvoiceBase, table=True):
+    __tablename__: str = "Invoice"
+
     id: Optional[int] = Field(primary_key=True, default=None, nullable=False)
 
-    client_contact: Optional["ClientContact"] = Relationship(back_populates="invoices")  # child
+    client_contact: Optional[ClientContact] = Relationship(
+        back_populates="invoices",
+        sa_relationship_kwargs=dict(primaryjoin="Invoice.client_contact_id==ClientContact.id"),
+    )  # child
 
-    # TODO: fixme - not working
-    # invoice_contact: Optional["InvoiceContact"] = Relationship(
-    #     back_populates="invoices",
-    #     sa_relationship_kwargs=dict(uselist=False),
-    # )  # child
+    invoice_contact: Optional[InvoiceContact] = Relationship(
+        back_populates="invoices",
+        sa_relationship_kwargs=dict(primaryjoin="Invoice.invoice_contact_id==InvoiceContact.id"),
+    )  # child
 
-    items: list["InvoiceItem"] = Relationship(
+    items: list[InvoiceItem] = Relationship(
         back_populates="invoice",
-        # sa_relationship_kwargs=dict(
-        # primaryjoin="Invoice.id==InvoiceItem.id",
-        # lazy="noload",
-        #     viewonly=True,
-        # ),
+        sa_relationship_kwargs=dict(
+            primaryjoin="Invoice.id==InvoiceItem.invoice_id",
+            # lazy="noload",
+            #     viewonly=True,
+        ),
     )  # parent
     notes: list["Note"] = Relationship(back_populates="invoice")  # parent
