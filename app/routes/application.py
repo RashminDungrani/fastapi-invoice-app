@@ -6,8 +6,8 @@ from fastapi.responses import FileResponse, UJSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.core.settings import settings
+from app.db.lifetime import register_shutdown_event, register_startup_event
 from app.paths import paths
-from app.routes.lifetime import register_shutdown_event, register_startup_event
 from app.routes.router import api_router
 
 

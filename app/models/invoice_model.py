@@ -1,14 +1,12 @@
 """
 TODO: Write about this model
 """
-import enum
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlmodel import Column, Enum, Field, ForeignKey, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-
     from app.models.invoice_item_model import InvoiceItem
     from app.models.note_model import Note
 
