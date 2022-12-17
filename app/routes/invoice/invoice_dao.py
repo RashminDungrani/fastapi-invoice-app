@@ -6,9 +6,7 @@ from sqlmodel import delete, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.db.dependencies import get_db_session
-from app.models.invoice_item_model import InvoiceItem
-from app.models.invoice_model import Invoice
-from app.models.note_model import Note
+from app.models.invoice_model import Invoice, InvoiceInput
 
 
 class InvoiceDAO:
@@ -24,20 +22,19 @@ class InvoiceDAO:
 
         return invoice
 
-    async def select_all(self, offset: Optional[int], limit: Optional[int]) -> list[Invoice]:
+    async def select_all(self, offset: Optional[int] = None, limit: Optional[int] = None) -> list[Invoice]:
         query = select(Invoice).offset(offset).limit(limit)
-        # .options(noload(InvoiceItem), noload(Note))
 
         invoices = (await self.session.execute(query)).scalars().fetchall()
         return invoices
 
-    async def insert(self, inserted_invoice: Invoice) -> Invoice:
+    async def insert(self, inserted_invoice: InvoiceInput) -> Invoice:
         invoice: Invoice = Invoice.from_orm(inserted_invoice)
         self.session.add(invoice)
         await self.session.commit()
         return invoice
 
-    async def update(self, db_invoice: Invoice, updated_invoice: Invoice) -> Invoice:
+    async def update(self, db_invoice: Invoice, updated_invoice: InvoiceInput) -> Invoice:
         for key, value in (updated_invoice.dict(exclude_unset=True)).items():
             setattr(db_invoice, key, value)
         self.session.add(db_invoice)

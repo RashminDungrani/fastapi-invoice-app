@@ -6,6 +6,9 @@ insert inital data to all tables
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseSettings
 
+from app.models.client_contact_model import ClientContactInput
+from app.routes.client_contact.client_contact_dao import ClientContactDAO
+
 router = APIRouter()
 
 # def create_db(drop_db_if_exist: bool = False):
@@ -66,8 +69,7 @@ super_admin_config = SuperAdminConfig()
 
 def check_super_admin_creds(username: str, password: str) -> None:
     if not (
-        super_admin_config.super_admin_username == username
-        and super_admin_config.super_admin_password == password
+        super_admin_config.super_admin_username == username and super_admin_config.super_admin_password == password
     ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -76,9 +78,7 @@ def check_super_admin_creds(username: str, password: str) -> None:
 
 
 @router.post("/db/create")
-async def create_database(
-    auth=Depends(check_super_admin_creds), drop_db_if_exist: bool = False
-):
+async def create_database(auth=Depends(check_super_admin_creds), drop_db_if_exist: bool = False):
 
     from app.db.utils import create_database
 
@@ -114,3 +114,12 @@ async def insert_inital_data(
 
     await init_db()
     return {"result": "success"}
+
+
+@router.post("/test")
+async def test(
+    # auth=Depends(check_super_admin_creds),
+    client_contact_input: ClientContactInput,
+    client_contact_dao: ClientContactDAO = Depends(),
+):
+    return await client_contact_dao.insert(client_contact_input)
