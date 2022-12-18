@@ -2,9 +2,11 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, status
+from sqlalchemy.orm import selectinload
+from sqlmodel import select
 
 from app.core.auth import AuthHandler
-from app.models.note_model import Note, NoteInput
+from app.models.note_model import Note, NoteInput, NoteWithInvoice
 from app.routes.note.note_dao import NoteDAO
 
 auth_handler = AuthHandler()
@@ -30,6 +32,24 @@ async def get_all_notes(
 ):
     notes = await note_dao.select_all(limit=limit)
     return notes
+
+
+@router.get("/all-with-invoice", response_model=list[NoteWithInvoice])
+async def get_all_notes_with_invoice(
+    limit: Optional[int] = Query(default=None, ge=0),
+    note_dao: NoteDAO = Depends(),
+):
+    statement = (
+        select(Note)
+        .options(
+            selectinload(Note.invoice),
+        )
+        .limit(limit)
+    )
+
+    result = await note_dao.select_custom(statement)
+    result = result.scalars().all()
+    return result
 
 
 # * PUT

@@ -1,11 +1,11 @@
 """
 Note model for perticular invoice note
 """
-import enum
+
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlmodel import Column, Enum, Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from app.models.invoice_model import Invoice
@@ -27,4 +27,9 @@ class Note(NoteInput, table=True):
     invoice: Optional["Invoice"] = Relationship(back_populates="notes")  # child
 
 
-#
+class NoteWithInvoice(NoteInput):
+    id: int
+    created_at: datetime
+    modified_at: datetime
+    deleted_at: Optional[datetime]
+    invoice: Optional["Invoice"]

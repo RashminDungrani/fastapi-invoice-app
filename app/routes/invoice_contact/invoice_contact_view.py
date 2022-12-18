@@ -2,9 +2,15 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import selectinload
+from sqlmodel import select
 
 from app.core.auth import AuthHandler
-from app.models.invoice_contact_model import InvoiceContact, InvoiceContactInput
+from app.models.invoice_contact_model import (
+    InvoiceContact,
+    InvoiceContactInput,
+    InvoiceContactWithInvoices,
+)
 from app.routes.invoice_contact.invoice_contact_dao import InvoiceContactDAO
 
 auth_handler = AuthHandler()
@@ -25,11 +31,29 @@ async def create_invoice_contact(
 # * GET
 @router.get("/all", response_model=list[InvoiceContact])
 async def get_all_invoice_contacts(
-    limit: Optional[int] = Query(default=100, ge=0),
+    limit: Optional[int] = Query(default=None, ge=0),
     invoice_contact_dao: InvoiceContactDAO = Depends(),
 ):
     invoice_contacts = await invoice_contact_dao.select_all(limit=limit)
     return invoice_contacts
+
+
+@router.get("/all-with-invoices", response_model=list[InvoiceContactWithInvoices])
+async def get_all_invoice_contacts_with_invoices(
+    limit: Optional[int] = Query(default=None, ge=0),
+    invoice_contact_dao: InvoiceContactDAO = Depends(),
+):
+    statement = (
+        select(InvoiceContact)
+        .options(
+            selectinload(InvoiceContact.invoices),
+        )
+        .limit(limit)
+    )
+
+    result = await invoice_contact_dao.select_custom(statement)
+    result = result.scalars().all()
+    return result
 
 
 # * PUT

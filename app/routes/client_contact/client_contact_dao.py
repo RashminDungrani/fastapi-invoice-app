@@ -1,5 +1,8 @@
+from typing import Any, Optional
+
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import selectinload
+from sqlalchemy.sql import Executable
 from sqlmodel import delete, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -20,9 +23,12 @@ class ClientContactDAO:
 
         return client_contact
 
-    async def select_all(self) -> list[ClientContact]:
-        client_contacts = (await self.session.execute(select(ClientContact))).scalars().fetchall()
+    async def select_all(self, limit: Optional[int] = None) -> list[ClientContact]:
+        client_contacts = (await self.session.execute(select(ClientContact).limit(limit))).scalars().fetchall()
         return client_contacts
+
+    async def select_custom(self, statement: Executable) -> Any:
+        return await self.session.execute(statement)
 
     async def insert(self, inserted_client_contact: ClientContactInput) -> ClientContact:
         client_contact: ClientContact = ClientContact.from_orm(inserted_client_contact)

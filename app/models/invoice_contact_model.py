@@ -28,10 +28,13 @@ class InvoiceContact(InvoiceContactInput, table=True):
 
     invoices: list["Invoice"] = Relationship(
         back_populates="invoice_contact",
-        # sa_relationship_kwargs=dict(primaryjoin="(InvoiceContact.id == Invoice.invoice_contact_id)"),
+        sa_relationship_kwargs=dict(primaryjoin="InvoiceContact.id == Invoice.invoice_contact_id"),
     )  # parent
-    # invoices: list["Invoice"] = Relationship(
-    #     back_populates="invoice_contact",
-    #     # sa_relationship_kwargs=dict(uselist=True)
-    #     # sa_relationship_kwargs=dict(primaryjoin="InvoiceContact.id==Invoice.invoice_contact_id"),
-    # )  # parent
+
+
+class InvoiceContactWithInvoices(InvoiceContactInput):
+    id: int
+    created_at: datetime
+    modified_at: datetime
+    deleted_at: Optional[datetime]
+    invoices: list["Invoice"]

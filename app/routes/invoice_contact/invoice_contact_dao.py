@@ -1,7 +1,8 @@
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import selectinload
+from sqlalchemy.sql import Executable
 from sqlmodel import delete, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -26,6 +27,9 @@ class InvoiceContactDAO:
         query = select(InvoiceContact).offset(offset).limit(limit)
         invoice_contacts = (await self.session.execute(query)).scalars().all()
         return invoice_contacts
+
+    async def select_custom(self, statement: Executable) -> Any:
+        return await self.session.execute(statement)
 
     async def insert(self, inserted_invoice_contact: InvoiceContactInput) -> InvoiceContact:
         invoice_contact: InvoiceContact = InvoiceContact.from_orm(inserted_invoice_contact)

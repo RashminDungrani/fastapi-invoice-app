@@ -28,3 +28,8 @@ class ClientContact(ClientContactBase, table=True):
     id: Optional[int] = Field(primary_key=True, default=None, nullable=False)
 
     invoices: list["Invoice"] = Relationship(back_populates="client_contact")  # parent
+
+
+class ClientContactWithInvoices(ClientContactBase):
+    id: int
+    invoices: list["Invoice"]

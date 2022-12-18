@@ -1,8 +1,9 @@
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import exc
 from sqlalchemy.orm import selectinload
+from sqlalchemy.sql import Executable
 from sqlmodel import delete, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -27,6 +28,9 @@ class NoteDAO:
         query = select(Note).offset(offset).limit(limit)
         notes = (await self.session.execute(query)).scalars().all()
         return notes
+
+    async def select_custom(self, statement: Executable) -> Any:
+        return await self.session.execute(statement)
 
     async def insert(self, inserted_note: NoteInput) -> Note:
         try:

@@ -166,3 +166,4 @@ cython_debug/
 
 z_things
 
+!envs/*example.env
