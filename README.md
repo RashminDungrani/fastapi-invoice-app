@@ -3,10 +3,10 @@ This is an invoice demo project template that uses FastAPI, Alembic and async SQ
 It shows a complete async CRUD template with multiple relationships between one table.
 
 ## Database design
-![Database Design](screenshots/Invoice%20DB%20design.png)
+![Database Design](screenshots/invoice_db_design.png)
 
 ## FastAPI Swagger UI
-![FastAPI Swagger UI](screenshots/Invoice%20App%20-%20Swagger%20UI.png)
+![FastAPI Swagger UI](screenshots/Invoice_app_swagger_ui.png)
 
 ## Features
 1. invoice number

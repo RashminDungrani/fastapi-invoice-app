@@ -1,7 +1,7 @@
 """
 Super Admin is for managing top level DB operations like 
-DB migration using alembic, droping and creating new DB,
-insert inital data to all tables
+DB migration using alembic, dropping and creating new DB,
+insert initial data to all tables
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseSettings
@@ -56,7 +56,7 @@ class SuperAdminConfig(BaseSettings):
     with environment variables.
     """
 
-    super_admin_username: str = ""
+    # super_admin_username: str = ""
     super_admin_password: str = ""
 
     class Config:
@@ -67,18 +67,16 @@ class SuperAdminConfig(BaseSettings):
 super_admin_config = SuperAdminConfig()
 
 
-def check_super_admin_creds(username: str, password: str) -> None:
-    if not (
-        super_admin_config.super_admin_username == username and super_admin_config.super_admin_password == password
-    ):
+def check_super_admin_cred(password: str) -> None:
+    if not (super_admin_config.super_admin_password == password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="username or password is invalid",
+            detail="password is invalid",
         )
 
 
 @router.post("/db/create")
-async def create_database(auth=Depends(check_super_admin_creds), drop_db_if_exist: bool = False):
+async def create_database(auth=Depends(check_super_admin_cred), drop_db_if_exist: bool = False):
 
     from app.db.utils import create_database
 
@@ -88,7 +86,7 @@ async def create_database(auth=Depends(check_super_admin_creds), drop_db_if_exis
 
 @router.post("/alembic/upgrade-head")
 async def alembic_upgrade_head(
-    auth=Depends(check_super_admin_creds),
+    auth=Depends(check_super_admin_cred),
 ):
     import asyncio
 
@@ -108,7 +106,7 @@ async def alembic_upgrade_head(
 
 @router.post("/db/insert-inital-data")
 async def insert_inital_data(
-    auth=Depends(check_super_admin_creds),
+    auth=Depends(check_super_admin_cred),
 ):
     from app.db.init_db import init_db
 
