@@ -21,8 +21,11 @@ python-multipart = "^0.0.5"
 yarl = "^1.8.2"
 alembic = "^1.8.1"
 pydantic = {extras = ["dotenv"], version = "^1.10.2"}
-
+ujson = "^5.5.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 119
